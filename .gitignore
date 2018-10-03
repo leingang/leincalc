@@ -1,0 +1,11 @@
+*.aux
+*.bib
+*.glo
+*.hd
+*.idx
+*.ins
+*.log
+*.out
+leincalc.pdf
+leincalc.sty
+*.toc

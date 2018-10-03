@@ -1,0 +1,217 @@
+% \iffalse meta-comment
+% http://www.texdev.net/2009/10/06/a-model-dtx-file/
+% !TEX program  = xelatex
+%<*internal>
+\iffalse
+%</internal>
+%<*internal>
+\fi
+\def\nameofplainTeX{plain}
+\ifx\fmtname\nameofplainTeX\else
+  \expandafter\begingroup
+\fi
+%</internal>
+%<*install>
+\input docstrip.tex
+\keepsilent
+\askforoverwritefalse
+\preamble
+-----------------------------------------------------------------------------
+leincalc.dtx --- macros to typeset calculus documents
+E-mail: leingang@nyu.edu
+All rights reserved.
+-----------------------------------------------------------------------------
+
+\endpreamble
+\postamble
+
+Copyright (C) 2003-18 by Matthew Leingang <leingang@nyu.edu>
+
+This work consists of the file  leincalc.dtx
+and the derived files           leincalc.sty
+                                leincalc.ins
+                                leincalc.bib
+                                leincalc.pdf
+
+\endpostamble
+%<install>\BaseDirectory{../../..}
+%<install>\UseTDS
+\usedir{tex/latex}
+\generate{
+  \file{\jobname.sty}{\from{\jobname.dtx}{package}}
+}
+%</install>
+%<install>\endbatchfile
+%<*internal>
+\generate{
+  \file{\jobname.sty}{\from{\jobname.dtx}{package}}
+  \file{\jobname.ins}{\from{\jobname.dtx}{install}}
+}
+\nopreamble
+\nopostamble
+\generate{
+  \file{\jobname.bib}{\from{\jobname.dtx}{bibliography}}
+}
+\ifx\fmtname\nameofplainTeX
+  \expandafter\endbatchfile
+\else
+  \expandafter\endgroup
+\fi
+%</internal>
+%<*package>
+% Keep version numbering separate from CDS.tex version numbering
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{leincalc}[2018/10/03 v0.2 Calculus macros]
+%</package>
+%<*driver>
+\documentclass{amsdtx}
+% \cls{amsdtx} derives from \cls{book}, which make the bibliography a chapter rather than a section.
+% So I need to re-define it.
+\makeatletter
+\newcommand{\refname}{Bibliography}
+\renewenvironment{thebibliography}[1]
+     {\section*{\refname}%
+      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+\usepackage[letterpaper]{geometry}
+\usepackage[numbered]{hypdoc}
+\usepackage{\jobname}
+%\usepackage{dtklogos}
+%\def\tikz/{\pkg{\protect{\normalfont Ti\textit{k}Z}}}
+%\def\pgf/{\pkg{\protect{\normalfont\textsc{pgf}}}}
+%\def\pgfplots/{\pkg{\protect{\normalfont\textsc{pgfplots}}}}
+\def\xetex/{\protect{\XeTeX}}
+\makeatletter
+\DeclareRobustCommand{\tk}{\category@index{TikZ key}}
+\DeclareRobustCommand{\coolkey}{\category@index{COOL key}}
+\makeatother
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+%\GetFileInfo{leincalc.sty}
+%
+% \title{Macros for typesetting calculus documents}
+% \author{Matthew Leingang\thanks{Email: leingang@nyu.edu}}
+% \date{Released \filedate\thanks{Version: \fileversion}}
+% 
+% \maketitle
+% \tableofcontents
+% \changes{v0.0}{2001/01/01}{First use of the leincalc style?}
+% \changes{v0.1}{2013/11/11}{More?}
+% \changes{v0.2}{2018/10/03}{l3build packaging}
+%
+% \StopEventually{^^A
+%   \PrintChanges
+%   \PrintIndex
+% }
+%
+%
+% \section*{Introduction}
+%
+%    \begin{macrocode}
+%<*package>
+%    \end{macrocode}
+%
+%
+%    \begin{macrocode}
+\usepackage{mathtools}
+\RequirePackage{siunitx}
+\sisetup{per-mode=symbol}
+\DeclareSIUnit\mile{mi}
+\DeclareSIUnit\pound{lb}
+\DeclareSIUnit\inch{in}
+\DeclareSIUnit\foot{ft}
+\DeclareSIUnit{\gallon}{gal}
+\DeclareSIUnit{\year}{yr}% IAU suggests "a" for "annum" but I don't care.
+
+\let\Tr\relax
+\RequirePackage{cool}%%
+\RequirePackage{makerobust}
+
+% Calc I
+% L'Hopital's Rule
+\newcommand{\Heq}{\stackrel{\text{H}}{=}}
+
+% Calc II
+% sequences
+\newcommand{\Sequence}[1]{\left\{#1\right\}}
+\newcommand{\Seqlist}[1]{\left\{#1\right\}}
+
+% Calc III
+% vectors
+\RequirePackage{etoolbox}
+\newcommand{\Veclist}[1]{\left<#1\right>}
+\newcommand{\Vector}[1]{%
+    \listval{#1}{0}
+    \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
+    \ifnumequal{\value{COOL@listlen}}{1}{%
+        \mathbf{#1}%
+    }{%
+        \ifnumequal{\value{COOL@listlen}}{2}{%
+            \overrightarrow{\listval{#1}{1}\listval{#1}{2}}
+        }{%
+            \PackageError{CDSmath}
+                {Invalid Parameter List}
+                {`Vector' has \arabic{COOL@listlen} values in its argument; needs 1 or 2}
+        }
+    }
+}
+\MakeRobustCommand{\Vector}
+\newcommand{\rowvec}[1]{\left<#1\right>}
+\newcommand{\ihat}{\text{\bfseries\upshape{\^\i}}}
+\newcommand{\jhat}{\text{\bfseries\upshape{\^\j}}}
+% \newcommand{\khat}{\text{\bfseries\upshape{\raisebox{0.35ex}{\^{\phantom{k}}}\llap{k}}}}
+% poor man's carat.  See http://tex.stackexchange.com/a/49321/1402
+\newcommand\pmc[1]{\sbox0{#1}\dimen0=\ht0 \advance\dimen0 -1ex
+  \sbox2{\^{}}\sbox2{\raise\dimen0\box2}%
+  {\ooalign{\hidewidth\box2\hidewidth\cr\box0\crcr}}}
+\newcommand{\khat}{\text{\bfseries{\upshape{\pmc{k}}}}}
+\newcommand{\Norm}[1]{\left|#1\right|}
+\newcommand{\Proj}{\operatorname{proj}}
+\newcommand{\Comp}{\operatorname{comp}}
+% Hessian
+\newcommand{\Hessian}[1]{\mathcal{H}#1}
+\newcommand{\grad}{\operatorname{grad}}
+\newcommand{\dvg}{\operatorname{div}}
+\newcommand{\curl}{\operatorname{curl}}
+%\newcommand{\Grad}[1]{\nabla #1}
+\newcommand{\Dvg}[1]{\nabla \cdot #1}
+%\newcommand{\Curl}[1]{\nabla\times #1}
+\newcommand{\GTeq}{\stackrel{\mathclap{\text{Green}}}{=}}
+\providecommand{\Vol}{\operatorname{Vol}}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%</package>
+%    \end{macrocode}
+%
+%
+%% \bibliographystyle{abbrv}
+%% \bibliography{\jobname}
+%
+% \Finale
+% \endinput
+%<*bibliography>
+%</bibliography>
