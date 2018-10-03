@@ -9,3 +9,4 @@
 leincalc.pdf
 leincalc.sty
 *.toc
+build/*
