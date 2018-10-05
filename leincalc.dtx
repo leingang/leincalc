@@ -91,6 +91,55 @@ and the derived files           leincalc.sty
 \usepackage[letterpaper]{geometry}
 \usepackage[numbered]{hypdoc}
 \usepackage{\jobname}
+
+% Code examples (issue #2)
+\usepackage{ydoc-expl}
+\usepackage[most]{tcolorbox}
+\usepackage{etoolbox}
+\lstset{backgroundcolor=\color{blue!10}}
+\input{svgnam.def}
+% Use a dogeared color box like tcolorbox's marker style <http://tex.stackexchange.com/a/307436/1402>
+\newtcolorbox{marker}[1][]{enhanced,
+    before skip=2mm,after skip=3mm,
+    boxrule=0.4pt,left=5mm,right=2mm,top=1mm,bottom=1mm,
+    colframe=LightGoldenrodYellow!50!black,
+    colback=LightGoldenrodYellow,
+    width=1cm+\wd\exampleresultbox,
+    halign=center,
+    sharp corners,rounded corners=northeast,arc is angular,arc=3mm,
+    underlay={%
+    \path[fill=tcbcol@back!80!black]
+        ([xshift=-3mm]interior.north east)--++(0,-0.3)--++(0.3,0);
+    \path[draw=tcbcol@frame,shorten <=-0.05mm,shorten >=-0.05mm]
+        ([xshift=-3mm]interior.north east)--++(0,-0.3)--++(0.3,0);
+    },
+    drop fuzzy shadow,#1}
+\newcommand{\styleresultbox}[1]{%
+    \begin{marker}
+    \mbox{#1}
+    \end{marker}
+}
+
+% There are two \cn{fbox}es that need to be patched.
+\patchcmd{\PrintExample}{\fbox}{\styleresultbox}{}{}
+\patchcmd{\PrintExample}{\fbox}{\styleresultbox}{}{}
+% I want to add to the style but don't know how without
+% copying
+\lstdefinestyle{examplecode}{%
+    language=[latex]tex,
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    numbers=left,
+    firstnumber=1,
+    numberstyle=\tiny\color{gray}\sffamily,
+    numbersep=5pt,
+    breaklines,prebreak={\mbox{\tiny$\swarrow$}},
+    commentstyle=\color{black!60},
+    frame=trbl,
+    frameround=tttt
+}%
+
+
 %\usepackage{dtklogos}
 %\def\tikz/{\pkg{\protect{\normalfont Ti\textit{k}Z}}}
 %\def\pgf/{\pkg{\protect{\normalfont\textsc{pgf}}}}
@@ -126,7 +175,11 @@ and the derived files           leincalc.sty
 % }
 %
 %
-% \section*{Introduction}
+% \section{Introduction}
+%
+% \section{Installation}
+%
+% \section{Usage/Implementation}
 %
 %    \begin{macrocode}
 %<*package>
@@ -135,6 +188,18 @@ and the derived files           leincalc.sty
 %
 %    \begin{macrocode}
 \usepackage{mathtools}
+%    \end{macrocode}
+%
+%
+% \subsection{Numbers and units}
+%
+% We use the \pkg{siunitx} package, which provides a stunning degree of control
+% over how numbers are formatted.  Also, macros for all types of units, following
+% SI recommendations.  
+%
+% But we can also declare imperial units.
+%
+%    \begin{macrocode}
 \RequirePackage{siunitx}
 \sisetup{per-mode=symbol}
 \DeclareSIUnit\mile{mi}
@@ -143,11 +208,153 @@ and the derived files           leincalc.sty
 \DeclareSIUnit\foot{ft}
 \DeclareSIUnit{\gallon}{gal}
 \DeclareSIUnit{\year}{yr}% IAU suggests "a" for "annum" but I don't care.
-
+%    \end{macrocode}
+%
+% \subsection{COOL Math}
+%
+% This is an old package but very useful.  It provides a Common, Object-Oriented
+% Language for lots of mathematical expressions.
+%
+%    \begin{macrocode}
 \let\Tr\relax
 \RequirePackage{cool}%%
 \RequirePackage{makerobust}
+%    \end{macrocode}
+% \section{Cool math}
+% I was alerted to the \pkg{cool} (COntent Oriented \latex/) package by the users at the \tex/ StackExchange.\footnote{specifically, by user Torbjorn T.}
+% It provides macros for describing math in a content-oriented format sort of like Mathematica does,
+% and styles for specifying how the math should be rendered.
+%    \begin{macrocode}
+\RequirePackage{cool}
+%    \end{macrocode}
+% I have customized the code in a couple of ways.
+% 
+% \subsection{Local cool styles}
+%
+% This is a hack of the \cn{COOL@keyeater} command from \fn{cool.sty} which replaces \cn{gdef} with a regular \cn{def}.
+%    \begin{macrocode}
+\def\COOL@keyeater#1=#2,#3\COOL@keyend{%
+\ifx#3\COOL@keystop%
+\expandafter\def\csname COOL@notation@#1\endcsname{#2}%
+\else%
+\expandafter\def\csname COOL@notation@#1\endcsname{#2}%
+\COOL@keyeater#3\COOL@keyend%
+\fi%
+}
+%    \end{macrocode}
+%
+% \subsection{Inverse trigonometric functions}
+% 
+% \begin{macro}{\ArcCot}
+% \begin{macro}{\ArcSec}
+% \begin{macro}{\ArcCsc}
+% The \pkg{cool} package provides a key \coolkey{ArcTrig} which determines whether the inverse trigonometric functions are set with  $-1$ superscripts (with the \texttt{inverse} value) or ``arc'' prefixes (with the \texttt{arc} value).
+% For example, $\sin^{-1}$ vs. $\arcsin$.
+% The only inverse trigonometric functions for which this key is checked are \cn{ArcSin}, \cn{ArcCos}, and \cn{ArcTan}.
+% So I re-implement \cn{ArcSec}, \cn{ArcCsc}, and \cn{ArcCot}.
+%
+% \begin{example}
+% \begin{examplecode}
+%    \(
+%       \Style{ArcTrig=arc}
+%       \begin{aligned}
+%         \ArcSin{1} &= \frac{\pi}{2}  \\
+%         \ArcCos{1} &= 0                  \\
+%         \ArcTan{1} &= \frac{\pi}{4}  \\
+%         \ArcCot{1} &= \frac{\pi}{4}  \\
+%         \ArcSec{1} &= 0                  \\
+%         \ArcCsc{1} &= \frac{\pi}{2}  \\
+%       \end{aligned}
+%    \)
+% \end{examplecode}
+% \caption{Inverse trigonometric functions}
+% \label{exam-invtrig}
+% \end{example}
+%
+%    \begin{macrocode}
+\newcommand{\COOL@switch@arctrig}[2]{%
+    \ifthenelse{\equal{\COOL@notation@ArcTrig}{inverse}}{#1}{%
+        \ifthenelse{\equal\COOL@notation@ArcTrig{arc}}{#2}{%
+            \PackageError{cool}{Invalid ArcTrig option: can be only `arc' or `inv'}%
+        }%
+    }
+}
+\renewcommand{\ArcCot}[1]{%
+    \COOL@switch@arctrig{\cot^{-1}}{\operatorname{arccot}}%
+    \COOL@decide@paren{ArcTan}{#1}%
+}
+\renewcommand{\ArcSec}[1]{%
+    \COOL@switch@arctrig{\sec^{-1}}{\operatorname{arcsec}}%
+    \COOL@decide@paren{ArcSec}{#1}%
+}
+\renewcommand{\ArcCsc}[1]{%
+    \COOL@switch@arctrig{\csc^{-1}}{\operatorname{arccsc}}%
+    \COOL@decide@paren{ArcCsc}{#1}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{Powers of trig functions}
+%
+%
+% \begin{macro}{\Sin}
+% \begin{macro}{\Cos}
+% \begin{macro}{\Tan}
+% \begin{macro}{\Cot}
+% \begin{macro}{\Sec}
+% \begin{macro}{\Csc}
+% \begin{macro}{\Sinh}
+% \changes{v0.2.4}{2015/03/13}{Made power-sensitive}
+% \begin{macro}{\Cosh}
+% \changes{v0.2.4}{2015/03/13}{Made power-sensitive}
+% I want to write \verb|$\Sin{x}^2$| and get the same result as \verb|$\sin^2(x)$|.
+% That seems like the \pkg{cool} way.
+% 
+%:TODO Make this a style implemented with a key.
+%:TODO Someday make this \href{http://en.wikipedia.org/wiki/Don't_repeat_yourself}{DRY}.  Not today.
+%
+%    \begin{macrocode}
+\let\COOL@Sin@Nopower\Sin
+\let\COOL@Cos@Nopower\Cos
+\let\COOL@Tan@Nopower\Tan
+\let\COOL@Cot@Nopower\Cot
+\let\COOL@Sec@Nopower\Sec
+\let\COOL@Csc@Nopower\Csc
 
+\def\Sin#1{\@ifnextchar^{\COOL@Sin@Power{#1}}{\COOL@Sin@Nopower{#1}}}
+\def\Cos#1{\@ifnextchar^{\COOL@Cos@Power{#1}}{\COOL@Cos@Nopower{#1}}}
+\def\Tan#1{\@ifnextchar^{\COOL@Tan@Power{#1}}{\COOL@Tan@Nopower{#1}}}
+\def\Cot#1{\@ifnextchar^{\COOL@Cot@Power{#1}}{\COOL@Cot@Nopower{#1}}}
+\def\Sec#1{\@ifnextchar^{\COOL@Sec@Power{#1}}{\COOL@Sec@Nopower{#1}}}
+\def\Csc#1{\@ifnextchar^{\COOL@Csc@Power{#1}}{\COOL@Csc@Nopower{#1}}}
+
+\def\COOL@Sin@Power#1^#2{\sin^{#2}\COOL@decide@paren{Sin}{#1}}
+\def\COOL@Cos@Power#1^#2{\cos^{#2}\COOL@decide@paren{Cos}{#1}}
+\def\COOL@Tan@Power#1^#2{\tan^{#2}\COOL@decide@paren{Tan}{#1}}
+\def\COOL@Cot@Power#1^#2{\cot^{#2}\COOL@decide@paren{Cot}{#1}}
+\def\COOL@Sec@Power#1^#2{\sec^{#2}\COOL@decide@paren{Sec}{#1}}
+\def\COOL@Csc@Power#1^#2{\csc^{#2}\COOL@decide@paren{Csc}{#1}}
+
+\let\COOL@Sinh@Nopower\Sinh
+\let\COOL@Cosh@Nopower\Cosh
+\def\Sinh#1{\@ifnextchar^{\COOL@Sinh@Power{#1}}{\COOL@Sinh@Nopower{#1}}}
+\def\Cosh#1{\@ifnextchar^{\COOL@Cosh@Power{#1}}{\COOL@Cosh@Nopower{#1}}}
+\def\COOL@Sinh@Power#1^#2{\sinh^{#2}\COOL@decide@paren{Sinh}{#1}}
+\def\COOL@Cosh@Power#1^#2{\cosh^{#2}\COOL@decide@paren{Cosh}{#1}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+
+
+%    \begin{macrocode}
 % Calc I
 % L'Hopital's Rule
 \newcommand{\Heq}{\stackrel{\text{H}}{=}}
