@@ -382,8 +382,8 @@ and the derived files           leincalc.sty
 
 % Calc III
 % vectors
-\RequirePackage{etoolbox}
-\newcommand{\Veclist}[1]{\left<#1\right>}
+\newcommand{\COOL@notation@Veclistparen}{ap}
+\newcommand{\Veclist}[1]{\COOL@decide@paren{Veclist}{#1}}
 \newcommand{\Vector}[1]{%
     \listval{#1}{0}
     \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
@@ -435,6 +435,7 @@ and the derived files           leincalc.sty
 % 
 %    \begin{macrocode}
 \ifbool{marsdentromba}{
+    \renewcommand{\COOL@notation@Veclistparen}{p}
     \newcommand{\Point}[1]{
         \listval{#1}{0}
         \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
