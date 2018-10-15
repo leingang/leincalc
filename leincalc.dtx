@@ -187,8 +187,25 @@ and the derived files           leincalc.sty
 %
 %
 %    \begin{macrocode}
-\usepackage{mathtools}
+\RequirePackage{mathtools}
+\RequirePackage{etoolbox}
 %    \end{macrocode}
+%
+% \subsection{Textbook styles}
+%
+% One major goal of the package is to separate content and presentation.
+% This way notation can be adapted from one textbook to another without
+% changing document-level commands.
+%
+%    \begin{macrocode}
+\newbool{stewart}
+\newbool{marsdentromba}
+\DeclareOption{Stewart}{}
+\DeclareOption{MarsdenTromba}{\booltrue{marsdentromba}}
+\ExecuteOptions{Stewart}
+\ProcessOptions\relax
+%    \end{macrocode}
+%
 %
 %
 % \subsection{Numbers and units}
@@ -220,7 +237,6 @@ and the derived files           leincalc.sty
 \RequirePackage{cool}%%
 \RequirePackage{makerobust}
 %    \end{macrocode}
-% \section{Cool math}
 % I was alerted to the \pkg{cool} (COntent Oriented \latex/) package by the users at the \tex/ StackExchange.\footnote{specifically, by user Torbjorn T.}
 % It provides macros for describing math in a content-oriented format sort of like Mathematica does,
 % and styles for specifying how the math should be rendered.
@@ -229,7 +245,7 @@ and the derived files           leincalc.sty
 %    \end{macrocode}
 % I have customized the code in a couple of ways.
 % 
-% \subsection{Local cool styles}
+% \subsubsection{Local cool styles}
 %
 % This is a hack of the \cn{COOL@keyeater} command from \fn{cool.sty} which replaces \cn{gdef} with a regular \cn{def}.
 %    \begin{macrocode}
@@ -243,7 +259,7 @@ and the derived files           leincalc.sty
 }
 %    \end{macrocode}
 %
-% \subsection{Inverse trigonometric functions}
+% \subsubsection{Inverse trigonometric functions}
 % 
 % \begin{macro}{\ArcCot}
 % \begin{macro}{\ArcSec}
@@ -296,7 +312,7 @@ and the derived files           leincalc.sty
 % \end{macro}
 % \end{macro}
 %
-% \subsection{Powers of trig functions}
+% \subsubsection{Powers of trig functions}
 %
 %
 % \begin{macro}{\Sin}
@@ -407,6 +423,37 @@ and the derived files           leincalc.sty
 \newcommand{\GTeq}{\stackrel{\mathclap{\text{Green}}}{=}}
 \providecommand{\Vol}{\operatorname{Vol}}
 %    \end{macrocode}
+%
+% \subsection{PackageOption: Marsden/Tromba Style}
+%
+% These macros alter the style for the Marsden and Tromba Vector 
+% Calculus text.
+%
+%:FIXME \cn{Point} isn't implemented in the Stewart style.
+%
+%:TODO Re-implement with PGF keys.
+% 
+%    \begin{macrocode}
+\ifbool{marsdentromba}{
+    \newcommand{\Point}[1]{
+        \listval{#1}{0}
+        \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
+        \ifnumequal{\value{COOL@listlen}}{1}{%
+            \mathrm{#1}%
+        }{%
+            \left(#1\right)
+        }
+    }
+    \MakeRobustCommand{\Point}
+    \renewcommand{\Veclist}[1]{\inp{#1}}
+    \renewcommand{\ihat}{\Vector{i}}
+    \renewcommand{\jhat}{\Vector{j}}
+    \renewcommand{\khat}{\Vector{k}}
+    \renewcommand{\Norm}[1]{\left\Vert#1\right\Vert}
+    \renewcommand{\lim}{\mathop{\operatorname{limit}}}
+}{}
+%    \end{macrocode}
+
 %
 %    \begin{macrocode}
 %</package>
