@@ -1,0 +1,9 @@
+\input regression-test.tex
+\documentclass{article}
+\usepackage[Stewart]{leincalc}
+\begin{document}
+\setbox0=\hbox{$\Veclist{a,b,c}$}
+\START
+\showbox0
+\END
+\end{document}

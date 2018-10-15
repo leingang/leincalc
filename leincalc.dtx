@@ -382,7 +382,7 @@ and the derived files           leincalc.sty
 
 % Calc III
 % vectors
-\newcommand{\COOL@notation@Veclistparen}{ap}
+\newcommand{\COOL@notation@VeclistParen}{ap}
 \newcommand{\Veclist}[1]{\COOL@decide@paren{Veclist}{#1}}
 \newcommand{\Vector}[1]{%
     \listval{#1}{0}
@@ -436,7 +436,7 @@ and the derived files           leincalc.sty
 % 
 %    \begin{macrocode}
 \ifbool{marsdentromba}{
-    \renewcommand{\COOL@notation@Veclistparen}{p}
+    \renewcommand{\COOL@notation@VeclistParen}{p}
     \newcommand{\Point}[1]{
         \listval{#1}{0}
         \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
@@ -448,7 +448,6 @@ and the derived files           leincalc.sty
     }
     \MakeRobustCommand{\Point}
     \renewcommand{\Plane}[1]{\mathcal{#1}}
-    \renewcommand{\Veclist}[1]{\inp{#1}}
     \renewcommand{\ihat}{\Vector{i}}
     \renewcommand{\jhat}{\Vector{j}}
     \renewcommand{\khat}{\Vector{k}}
