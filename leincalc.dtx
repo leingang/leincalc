@@ -412,6 +412,7 @@ and the derived files           leincalc.sty
 \newcommand{\Norm}[1]{\left|#1\right|}
 \newcommand{\Proj}{\operatorname{proj}}
 \newcommand{\Comp}{\operatorname{comp}}
+\newcommand{\Plane}[1]{\mathit{#1}}
 % Hessian
 \newcommand{\Hessian}[1]{\mathcal{H}#1}
 \newcommand{\grad}{\operatorname{grad}}
@@ -446,6 +447,7 @@ and the derived files           leincalc.sty
         }
     }
     \MakeRobustCommand{\Point}
+    \renewcommand{\Plane}[1]{\mathcal{#1}}
     \renewcommand{\Veclist}[1]{\inp{#1}}
     \renewcommand{\ihat}{\Vector{i}}
     \renewcommand{\jhat}{\Vector{j}}
