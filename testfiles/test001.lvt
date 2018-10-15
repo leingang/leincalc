@@ -1,0 +1,9 @@
+\input regression-test.tex
+\documentclass{article}
+\usepackage[MarsdenTromba]{leincalc}
+\begin{document}
+\START
+\setbox0=\hbox{$\Veclist{a,b,c}$}
+\showbox0
+\END
+\end{document}
