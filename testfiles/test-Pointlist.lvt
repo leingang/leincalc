@@ -1,0 +1,9 @@
+\input regression-test.tex
+\documentclass{article}
+\usepackage{leincalc}
+\begin{document}
+\setbox0=\hbox{$\Pointlist{a,b,c}$}
+\START
+\showbox0
+\END
+\end{document}
