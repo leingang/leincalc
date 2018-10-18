@@ -11,3 +11,5 @@ leincalc.sty
 *.toc
 build/*
 *.exa
+leincalc.synctex.gz
+leincalc.synctex.gz
