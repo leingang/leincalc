@@ -13,3 +13,4 @@ build/*
 *.exa
 leincalc.synctex.gz
 leincalc.synctex.gz
+*(busy)
