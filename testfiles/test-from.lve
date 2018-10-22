@@ -1,0 +1,9 @@
+\input regression-test.tex
+\documentclass{article}
+\usepackage{leincalc}
+\begin{document}
+\setbox0=\hbox{$f\colon[a,b]\to[c,d]$}
+\START
+\showbox0
+\END
+\end{document}

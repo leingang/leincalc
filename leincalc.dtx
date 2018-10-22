@@ -218,7 +218,7 @@ and the derived files           leincalc.sty
 % \end{examplecode}
 % \end{example}
 %    \begin{macrocode}
-\newcommand{\Z}{\mathbb{Z}}
+\provicommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
 %    \end{macrocode}
@@ -388,7 +388,20 @@ and the derived files           leincalc.sty
 % \end{macro}
 % \end{macro}
 
-
+%
+% \subsection{Macros for Calculus I}
+%
+% \begin{macro}{\from}
+% Semantic macro separating the name of a function and its domain
+% \begin{example}
+%    \begin{examplecode}
+%        $f \from \R \to \R$
+%    \end{examplecode}
+% \end{example}
+%    \begin{macrocode}
+\providecommand{\from}{\colon}
+%    \end{macrocode}
+% \end{macro}
 %    \begin{macrocode}
 % Calc I
 % L'Hopital's Rule
