@@ -139,6 +139,18 @@ and the derived files           leincalc.sty
     frameround=tttt
 }%
 
+\lstdefinestyle{terminal}{
+  language=sh,basicstyle=\ttfamily,emphstyle={\slshape}
+}
+\lstnewenvironment{lstterm}[1][]{%
+    \lstset{
+      style=terminal,
+      gobble=2,
+      #1
+    }}
+{}
+
+
 
 %\usepackage{dtklogos}
 %\def\tikz/{\pkg{\protect{\normalfont Ti\textit{k}Z}}}
@@ -168,6 +180,7 @@ and the derived files           leincalc.sty
 % \tableofcontents
 % \changes{v0.1}{2013/11/11}{First use of the leincalc style?}
 % \changes{v0.2}{2018/10/03}{l3build packaging}
+% \changes{unreleased}{2019/06/16}{Added installation documentation}
 %
 % \StopEventually{^^A
 %   \PrintChanges
@@ -178,6 +191,17 @@ and the derived files           leincalc.sty
 % \section{Introduction}
 %
 % \section{Installation}
+% 
+% If you have the git repository, and a \TeX-live installation,
+% type this at the command line: 
+%
+% \begin{lstterm}
+% $ l3build install --full
+% \end{lstterm}  
+%
+% This should install the package in a place that your TeX installation
+% can find it and also that you can write to.  The \texttt{--full} 
+% option also installs documentation.  
 %
 % \section{Usage/Implementation}
 %
@@ -416,6 +440,16 @@ and the derived files           leincalc.sty
 %
 % \subsection{Macros for Calculus III}
 %
+% \begin{macro}{\Point} 
+% Name a point by a single symbol.
+% Some books typeset these in something other than the default
+% math italic.  E.g., Marsden/Tromba use math roman.
+%    \begin{macrocode}
+\newcommand{\Point}[1]{#1}
+\MakeRobustCommand{\Point}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\Pointlist}
 % Name a point by a list of coordinates.
 %    \begin{macrocode}
@@ -432,6 +466,13 @@ and the derived files           leincalc.sty
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\Vector}
+% Name a vector by a single symbol, or a pair of points.
+% \begin{example}
+% \begin{examplecode}
+%    $\Vector{a}$, $\Vector{O,P}$
+% \end{examplecode}
+% \end{example}
 %
 %    \begin{macrocode}
 \newcommand{\Vector}[1]{%
@@ -450,6 +491,10 @@ and the derived files           leincalc.sty
     }
 }
 \MakeRobustCommand{\Vector}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
 \newcommand{\rowvec}[1]{\left<#1\right>}
 \newcommand{\ihat}{\text{\bfseries\upshape{\^\i}}}
 \newcommand{\jhat}{\text{\bfseries\upshape{\^\j}}}
@@ -480,14 +525,13 @@ and the derived files           leincalc.sty
 % These macros alter the style for the Marsden and Tromba Vector 
 % Calculus text.
 %
-%:FIXME \cn{Point} isn't implemented in the Stewart style.
-%
 %:TODO Re-implement with PGF keys.
+% \changes{unrelease}{2019/02/26}{Change \cn{Hessian} to math italic style}
 % 
 %    \begin{macrocode}
 \ifbool{marsdentromba}{
     \renewcommand{\COOL@notation@VeclistParen}{p}
-    \newcommand{\Point}[1]{
+    \renewcommand{\Point}[1]{
         \listval{#1}{0}
         \setcounter{COOL@listlen}{\value{COOL@listpointer}}%
         \ifnumequal{\value{COOL@listlen}}{1}{%
@@ -496,21 +540,67 @@ and the derived files           leincalc.sty
             \left(#1\right)
         }
     }
-    \MakeRobustCommand{\Point}
     \renewcommand{\Plane}[1]{\mathcal{#1}}
     \renewcommand{\ihat}{\Vector{i}}
     \renewcommand{\jhat}{\Vector{j}}
     \renewcommand{\khat}{\Vector{k}}
     \renewcommand{\Norm}[1]{\left\Vert#1\right\Vert}
     \renewcommand{\lim}{\mathop{\operatorname{limit}}}
+    \renewcommand{\Hessian}[1]{\mathit{H}#1}
 }{}
 %    \end{macrocode}
-
+%
 %
 %    \begin{macrocode}
 %</package>
 %    \end{macrocode}
 %
+%
+% \section{Developer Notes}
+% 
+% \changes{unreleased}{2019/06/16}{Added checklist for version release}
+%
+% Here is the versioning process:
+% 
+% \begin{enumerate}
+%   \item Edit and make changes.  Use the \cn{changes} macro to record the 
+%         dates, but keep the version name \texttt{unreleased}.
+%   \item Tag the source files and repository.
+%         We use \href{https://semver.org/}{semantic versioning}.  
+%         The version tag is a literal \texttt{v} with the version number
+%         appended.  The most recent release at the time of this writing 
+%         is 0.3.0, so the tag is \texttt{v0.3.0}.
+%
+%         To get the current version, use the shell command
+%         \lstinline[style=terminal]!git tag! and look for the most recent
+%         version tag. Alternatively, the \cn{ProvidesPackage} line at the
+%         top of this file provides the version number.
+%
+%         If \texttt{\textsl{newtag}} is the tag name for the next version, 
+%         run:
+% \begin{lstterm}[emph={newtag}]
+% $ l3build tag newtag
+% \end{lstterm}
+% 
+%         \texttt{l3build} will reject an invalid tag name, and won't tag a
+%         dirty working directory.  Assuming those checks are passed, the 
+%         source files will be updated with the new version name and date.
+%         This includes marking all \texttt{unreleased} changes with the new
+%         version name.  The new files will be committed, and the repository
+%         tagged.  
+%
+%   \item To push changes to github, run
+% \begin{lstterm}
+% $ git push
+% $ git push --tags
+% \end{lstterm}
+% \end{enumerate}
+%
+%% \bibliographystyle{abbrv}
+%% \bibliography{\jobname}
+%
+% \Finale
+% \endinput
 %
 %% \bibliographystyle{abbrv}
 %% \bibliography{\jobname}
